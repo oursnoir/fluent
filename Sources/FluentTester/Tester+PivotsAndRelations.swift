@@ -93,6 +93,8 @@ extension Tester {
         var hwVapor = try Pivot<Pivot<Atom, Compound>, Student>(hydrogenWater, vapor)
         try hwVapor.save()
 
+        /*
+
         let pivot1 = Pivot<Student, Pivot<Atom, Compound>>.self
         let result1 = try pivot1.related(
             left: vapor,
@@ -132,6 +134,6 @@ extension Tester {
         )
         guard !result4 else {
             throw Error.failed("Pivot relation failed.")
-        }
+        }*/
     }
 }

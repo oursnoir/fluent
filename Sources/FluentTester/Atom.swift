@@ -32,7 +32,7 @@ public final class Atom: Entity {
         ])
     }
 
-    public func compounds() throws -> Siblings<Atom, Compound> {
+    public func compounds() throws -> Siblings<Compound> {
         return try siblings()
     }
 

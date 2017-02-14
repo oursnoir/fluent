@@ -41,38 +41,54 @@ extension Filter: CustomStringConvertible {
 
 extension QueryRepresentable {
     @discardableResult
-    public func filter<T: Entity>(
-        _ entity: T.Type,
+    public func filter(
+        _ entityType: Entity.Type,
         _ field: String,
         _ comparison: Filter.Comparison,
         _ value: NodeRepresentable
     ) throws -> Query<Self.T> {
         let query = try makeQuery()
-        let filter = Filter(entity, .compare(field, comparison, try value.makeNode()))
+        let filter = Filter(
+            entityType,
+            .compare(
+                field,
+                comparison,
+                try value.makeNode()
+            )
+        )
         query.filters.append(filter)
         return query
     }
 
     @discardableResult
-    public func filter<T: Entity>(
-        _ entity: T.Type,
+    public func filter(
+        _ entityType: Entity.Type,
         _ field: String,
         _ scope: Filter.Scope,
         _ set: [NodeRepresentable]
-        ) throws -> Query<Self.T> {
+    ) throws -> Query<Self.T> {
         let query = try makeQuery()
-        let filter = Filter(T.self, .subset(field, scope, try set.map({ try $0.makeNode() })))
+        let filter = Filter(
+            entityType,
+            .subset(
+                field,
+                scope,
+                try set.map({
+                    try $0.makeNode()
+                })
+            )
+        )
         query.filters.append(filter)
         return query
     }
 
     @discardableResult
-    public func filter<T: Entity>(
-        _ entity: T.Type,
+    public func filter(
+        _ entityType: Entity.Type,
         _ field: String,
         _ value: NodeRepresentable
     ) throws -> Query<Self.T> {
-        return try makeQuery().filter(entity, field, .equals, value)
+        return try filter(entityType, field, .equals, value)
     }
 
     //MARK: Filter

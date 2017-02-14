@@ -4,12 +4,9 @@
 /// and can be used like any other Fluent model
 /// in preparations, querying, etc.
 public final class Pivot<
-    L: Entity,
-    R: Entity
->: PivotProtocol, Entity {
-    public typealias Left = L
-    public typealias Right = R
-
+    Left: Entity,
+    Right: Entity
+>: PivotProtocol {
     public static var entity: String {
         if Left.name < Right.name {
             return "\(Left.name)_\(Right.name)"
@@ -74,4 +71,64 @@ public final class Pivot<
     public static func revert(_ database: Database) throws {
         try database.delete(entity)
     }
+
+    /// See PivotProtocol.related
+    public static func related(_ left: Entity, _ right: Entity) throws -> Bool {
+        let (leftId, rightId) = try assertSaved(left, right)
+
+        let results = try query()
+            .filter(type(of: left).foreignIdKey, leftId)
+            .filter(type(of: right).foreignIdKey, rightId)
+            .first()
+
+        return results != nil
+    }
+
+    /// See PivotProtocol.attach
+    public static func attach(_ left: Entity, _ right: Entity) throws {
+        _ = try assertSaved(left, right)
+
+        guard let l = left as? Left else {
+            throw PivotError.invalidType(left, desiredType: Left.self)
+        }
+
+        guard let r = right as? Right else {
+            throw PivotError.invalidType(right, desiredType: Right.self)
+        }
+
+        var pivot = try Pivot<Left, Right>(l, r)
+        try pivot.save()
+    }
+
+    /// See PivotProtocol.detach
+    public static func detach(_ left: Entity, _ right: Entity) throws {
+        let (leftId, rightId) = try assertSaved(left, right)
+
+        try query()
+            .filter(Left.foreignIdKey, leftId)
+            .filter(Right.foreignIdKey, rightId)
+            .delete()
+    }
+}
+
+// MARK: Convenience
+
+private func assertSaved(_ left: Entity, _ right: Entity) throws -> (Node, Node) {
+    guard left.exists else {
+        throw PivotError.existRequired(left)
+    }
+
+    guard let leftId = left.id else {
+        throw PivotError.idRequired(left)
+    }
+
+    guard right.exists else {
+        throw PivotError.existRequired(right)
+    }
+
+    guard let rightId = right.id else {
+        throw PivotError.idRequired(right)
+    }
+
+    return (leftId, rightId)
 }

@@ -458,9 +458,15 @@ open class GeneralSQLSerializer: SQLSerializer {
 
         var clause: [String] = []
 
-        let values = Array(dict.values)
+        var values: [Node] = []
+        var keys: [String] = []
 
-        clause += sql(keys: Array(dict.keys))
+        dict.forEach { (key, value) in
+            keys += key
+            values += value
+        }
+
+        clause += sql(keys: keys)
         clause += "VALUES"
         clause += sql(values)
 

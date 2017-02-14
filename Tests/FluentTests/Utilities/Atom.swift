@@ -26,7 +26,7 @@ struct Atom: Entity {
         ])
     }
 
-    func compounds() throws -> Siblings<Atom, Compound> {
+    func compounds() throws -> Siblings<Compound> {
         return try siblings()
     }
 
