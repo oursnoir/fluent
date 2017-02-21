@@ -7,6 +7,10 @@ public final class Atom: Entity {
 
     public let storage = Storage()
 
+    public var compounds: Siblings<Atom, Compound, Pivot<Atom, Compound>> {
+        return siblings()
+    }
+
     public init(id: Node?, name: String, protons: Int, weight: Double) {
         self.name = name
         self.protons = protons
@@ -29,10 +33,6 @@ public final class Atom: Entity {
             "protons": protons,
             "weight": weight
         ])
-    }
-
-    var compounds: Siblings<Atom, Compound, Pivot<Atom, Compound>> {
-        return siblings()
     }
 
     public static func prepare(_ database: Database) throws {

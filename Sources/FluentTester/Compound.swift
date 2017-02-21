@@ -4,6 +4,10 @@ public final class Compound: Entity {
     public var name: String
     public let storage = Storage()
 
+    public var atoms: Siblings<Compound, Atom, Pivot<Compound, Atom>> {
+        return siblings()
+    }
+    
     public init(id: Node?, name: String) {
         self.name = name
         self.id = id
@@ -19,10 +23,6 @@ public final class Compound: Entity {
             idKey: id,
             "name": name
         ])
-    }
-
-    var atoms: Siblings<Compound, Atom, Pivot<Compound, Atom>> {
-        return siblings()
     }
 
     // wish this would work!
